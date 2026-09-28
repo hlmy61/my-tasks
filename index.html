@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>مهام أبو غزوان</title>
+    <style>
+      body {
+        background-color: #1a1a2e;
+        color: white;
+        font-family: Arial;
+        padding: 40px 20px;
+        text-align: center;
+      }
+      h1 { color: #e94560; }
+      input {
+        padding: 15px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        width: 60%;
+        text-align: center;
+      }
+      .اضف {
+        background-color: #e94560;
+        color: white;
+        border: none;
+        padding: 15px 25px;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-right: 5px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 30px;
+      }
+      li {
+        background-color: #16213e;
+        padding: 15px;
+        margin: 10px auto;
+        border-radius: 10px;
+        max-width: 500px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      li.منجزة {
+        text-decoration: line-through;
+        color: #888;
+        background-color: #0f0f1a;
+      }
+      .حذف {
+        background-color: #444;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📋 مهام أبو غزوان</h1>
+
+    <input type="text" id="مهمة_جديدة" placeholder="اكتب مهمة جديدة...">
+    <button class="اضف" onclick="اضف_مهمة()">إضافة</button>
+
+    <ul id="القائمة"></ul>
+
+    <script>
+      // نقرأ المهام المحفوظة أو نبدأ بقائمة فاضية
+      var المهام = JSON.parse(localStorage.getItem("مهامي")) || [];
+
+      // نعرض المهام
+      function اعرض() {
+        var القائمة = document.getElementById("القائمة");
+        القائمة.innerHTML = "";
+
+        for (var i = 0; i < المهام.length; i++) {
+          var li = document.createElement("li");
+          li.innerText = المهام[i].نص;
+
+          if (المهام[i].منجزة) {
+            li.className = "منجزة";
+          }
+
+          // اضغط على المهمة = نجّزها
+          li.onclick = (function(index) {
+            return function() {
+              المهام[index].منجزة = !المهام[index].منجزة;
+              احفظ();
+            };
+          })(i);
+
+          // زر الحذف
+          var زر_حذف = document.createElement("button");
+          زر_حذف.innerText = "🗑️";
+          زر_حذف.className = "حذف";
+          زر_حذف.onclick = (function(index) {
+            return function(e) {
+              e.stopPropagation();
+              المهام.splice(index, 1);
+              احفظ();
+            };
+          })(i);
+
+          li.appendChild(زر_حذف);
+          القائمة.appendChild(li);
+        }
+      }
+
+      // نحفظ المهام
+      function احفظ() {
+        localStorage.setItem("مهامي", JSON.stringify(المهام));
+        اعرض();
+      }
+
+      // نضيف مهمة جديدة
+      function اضف_مهمة() {
+        var النص = document.getElementById("مهمة_جديدة").value;
+        if (النص === "") {
+          alert("اكتب مهمة أولاً! 😅");
+          return;
+        }
+        المهام.push({ نص: النص, منجزة: false });
+        document.getElementById("مهمة_جديدة").value = "";
+        احفظ();
+      }
+
+      اعرض();
+    </script>
+  </body>
+</html>
